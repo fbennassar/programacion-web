@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mates Mágicas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="login-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
+            stroke-width="1.5" 
+            d="M3.429 18.366h6M15 8.707h6m-6-4.39h6M3 6.512h3.429m0 0h3.428m-3.428 
+            0V3m0 3.512v3.512M15.6 21l2.425-2.484m0 0l2.424-2.483m-2.424 2.483L15.6 16.033m2.425 2.483L20.449 21" />
+        </svg>
+        <h1>¡Bienvenido a Mates Mágicas!</h1>
+        <form>
+            <div class="input-group">
+                <label for="username">Usuario o Correo</label>
+                <div class="input-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M22 6L12 13L2 6" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario o correo">
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <div class="input-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M5 11H19V21C19 21.5523 18.5523 22 18 22H6C5.44772 22 5 21.5523 5 21V11Z" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 15V18" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <input type="password" id="password" name="password" placeholder="Escribe tu contraseña">
+                </div>
+            </div>
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
+            <a href="#" class="register-link">¿No tienes cuenta? ¡Regístrate!</a>
+        </form>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
