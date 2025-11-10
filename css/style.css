@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
     background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
     display: flex;
     justify-content: center;
