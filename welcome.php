@@ -36,11 +36,11 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             <h1>¿Qué vamos a practicar hoy?</h1>
             <p>¡Elige una opción para empezar!</p>
             <div class="options-container">
-                <a href="ejercicios.php" class="option-card option-sumas">
+                <a href="ejercicios.php?tipo=sumas" class="option-card option-sumas">
                     <span class="option-icon">+</span>
                     <span class="option-text">Sumas</span>
                 </a>
-                <a href="ejercicios.php" class="option-card option-restas">
+                <a href="ejercicios.php?tipo=restas" class="option-card option-restas">
                     <span class="option-icon">-</span>
                     <span class="option-text">Restas</span>
                 </a>

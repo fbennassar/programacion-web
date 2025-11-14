@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <div class="login-container">
+    <div class="login-container <?php echo (!empty($login_err) ? 'shake' : ''); ?>">
         <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
             stroke-width="1.5" 
@@ -111,8 +111,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <?php 
         if(!empty($login_err)){
-            echo '<div class="alert alert-danger">' . $login_err . '</div>';
-        }        
+            // use role=alert and aria-live for accessibility; tabindex makes it focusable
+            echo '<div class="alert alert-danger" role="alert" aria-live="assertive" tabindex="-1">' . htmlspecialchars($login_err) . '</div>';
+        }
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -145,6 +146,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <script src="js/main.js"></script>
+    <script>
+        // Focus the first field with error, or the username by default
+        (function(){
+            try {
+                <?php if (!empty($username_err)) : ?>
+                document.getElementById('username').focus();
+                <?php elseif (!empty($password_err)) : ?>
+                document.getElementById('password').focus();
+                <?php elseif (!empty($login_err)) : ?>
+                // focus the container to make screen readers announce it
+                const alertEl = document.querySelector('.alert[role=alert]');
+                if (alertEl) alertEl.focus && alertEl.focus();
+                <?php else: ?>
+                document.getElementById('username').focus();
+                <?php endif; ?>
+            } catch(e) { /* noop */ }
+        })();
+    </script>
 </body>
 
 </html>

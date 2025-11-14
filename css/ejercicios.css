@@ -1,4 +1,3 @@
-/* Styles for ejercicios page */
 .ejercicios-container {
     padding: 20px;
 }
@@ -18,10 +17,43 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 .card.done {
     opacity: 0.6;
     border: 2px solid #4caf50;
+}
+/* Para mostrar un check en los ejercicios completados */
+.card.done::after {
+    content: '✔';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(180deg,#4caf50,#2e7d32);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 50%;
+    box-shadow: 0 6px 14px rgba(46,125,50,0.28);
+    transform: scale(1);
+    transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.card.celebrate {
+    animation: popPulse 520ms ease forwards;
+}
+@keyframes popPulse {
+    0% { transform: translateY(0) scale(1); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+    40% { transform: translateY(-6px) scale(1.04); box-shadow: 0 18px 36px rgba(76,175,80,0.18); }
+    70% { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 22px rgba(76,175,80,0.12); }
+    100% { transform: translateY(0) scale(1); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+}
+
+.card .status {
+    font-weight: 700;
+    color: #2e7d32;
 }
 .operation-compact { display:flex; align-items:center; gap:10px; font-size:20px; }
 .operation-compact .num { font-weight:700; }
@@ -33,7 +65,85 @@
 .close-btn { position:absolute; right:10px; top:8px; border:none; background:none; font-size:20px; cursor:pointer; }
 .big-op { text-align:center; margin-bottom:12px; }
 .big-numbers { font-size:42px; font-weight:700; display:flex; justify-content:center; gap:18px; align-items:center; }
-.answer-display { font-size:28px; margin-top:8px; }
+
+/* Mostrar cada número con sus dígitos apilados (uno encima del otro) */
+.stacked-number {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+}
+.stacked-number .digit {
+    line-height: 1.1;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Answer display: mostrar dígitos de derecha a izquierda (modo estudiante). */
+.answer-display {
+    font-family: monospace;
+    font-size: 28px;
+    margin-top: 8px;
+    min-height: 40px;
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fafafa;
+    border: 1px dashed #ddd;
+    /* Usar direction rtl para que el contenido se alinee derecha-izquierda */
+    direction: rtl;
+    text-align: left; /* keep digits stacked visually from right */
+}
+
+/* Calculation grid: operator at left, digits columns to the right */
+.calc-grid {
+    display: grid;
+    grid-auto-rows: 64px;
+    gap: 6px;
+    align-items: end;
+}
+
+.calc-wrapper {
+    display: grid;
+    align-items: end;
+    justify-items: center;
+}
+.answer-row { margin-top: 12px; }
+.calc-grid .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 36px;
+}
+.calc-grid .operator-cell { font-size: 40px; padding-bottom:6px; }
+.calc-grid .top-digit { color: #222; }
+.calc-grid .bot-digit { color: #222; }
+.calc-grid .underline {
+    height: 6px;
+    background: #222;
+    margin-top: 6px;
+    border-radius: 6px;
+}
+
+/* Answer boxes (each box represents a digit column). Styled to match reference */
+.answer-boxes { display: inline-flex; gap: 12px; padding: 14px; border-radius: 12px; border: 2px dotted #e6e6e6; background: #fafafa; box-shadow: inset 0 1px 0 #fff; direction: rtl; }
+.answer-box { width: 72px; height: 72px; border-radius: 10px; background: #fff; border: 1px solid #ececec; display:flex; align-items:center; justify-content:center; font-size:34px; font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif; color:#222; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.answer-box.filled { background:#f3fff3; }
+
+/* Mini card stacked calc */
+.mini-calc { display: grid; gap:4px; align-items:end; background:#fff; padding:8px; border-radius:10px; box-shadow: 0 6px 12px rgba(0,0,0,0.06); }
+.mini-cell { display:flex; align-items:center; justify-content:center; font-weight:800; font-size:18px; min-width:34px; min-height:24px; }
+.mini-operator { font-size:20px; color:#111; }
+.mini-cell.mini-top, .mini-cell.mini-bot { color:#111; }
+.mini-cell.mini-empty { min-width:34px; min-height:24px; }
+.card .status { margin-top:8px; font-size:12px; }
+
+/* Card visual improvements */
+.card { transition: transform 0.15s, box-shadow 0.15s; }
+.card:hover { transform: translateY(-6px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+.card-inner { display:flex; flex-direction:column; align-items:center; gap:8px; }
 .keypad { display:flex; flex-direction:column; gap:8px; }
 .keypad .row { display:flex; gap:8px; }
 .key { flex:1; padding:12px; border-radius:8px; border:none; background:#e8f5e9; cursor:pointer; font-size:18px; }

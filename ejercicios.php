@@ -83,8 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         for ($t = 0; $t < 2; $t++) {
             $tipo_letter = $t === 0 ? 'S' : 'R';
             for ($i = 0; $i < 24; $i++) {
-                $a = rand(10, 99);
-                $b = rand(10, 99);
+                // Para restas, asegurarnos que a >= b para evitar resultados negativos
+                if ($tipo_letter === 'R') {
+                    $a = rand(10, 99);
+                    $b = rand(10, $a);
+                } else {
+                    $a = rand(10, 99);
+                    $b = rand(10, 99);
+                }
                 $code = $tipo_letter . "-{$a}-{$b}";
                 if ($stmt = $conn->prepare($insert_sql)) {
                     $stmt->bind_param('issii', $_SESSION['id'], $code, $tipo_letter, $a, $b);
@@ -117,8 +123,14 @@ $insert_sql = "INSERT INTO operations (user_id, code, tipo, a, b, status, create
 foreach (['S','R'] as $tipo_letter) {
     $needed = 24 - $have[$tipo_letter];
     for ($i = 0; $i < $needed; $i++) {
-        $a = rand(10, 99);
-        $b = rand(10, 99);
+        // Para restas, asegurarnos que a >= b
+        if ($tipo_letter === 'R') {
+            $a = rand(10, 99);
+            $b = rand(10, $a);
+        } else {
+            $a = rand(10, 99);
+            $b = rand(10, 99);
+        }
         $code = $tipo_letter . "-{$a}-{$b}";
         if ($stmt = $conn->prepare($insert_sql)) {
             $stmt->bind_param('issii', $_SESSION['id'], $code, $tipo_letter, $a, $b);
@@ -184,12 +196,39 @@ $page_ops = array_slice($operations, $start, 8);
             <?php foreach ($page_ops as $op): ?>
                 <div class="card <?php echo ($op['status'] === 'done') ? 'done' : ''; ?>" data-id="<?php echo $op['id'] ?? 0; ?>" data-a="<?php echo $op['a']; ?>" data-b="<?php echo $op['b']; ?>" data-code="<?php echo $op['code']; ?>">
                     <div class="card-inner">
-                        <div class="operation-compact">
-                            <span class="num"><?php echo $op['a']; ?></span>
-                            <span class="sym"><?php echo $symbol; ?></span>
-                            <span class="num"><?php echo $op['b']; ?></span>
+                        <?php
+                        // Render a small stacked representation inside the card
+                        $sa = strval($op['a']);
+                        $sb = strval($op['b']);
+                        $maxLenSmall = max(strlen($sa), strlen($sb));
+                        ?>
+                        <div class="mini-calc" style="grid-template-columns: auto repeat(<?php echo $maxLenSmall; ?>, 1fr);">
+                            <div class="mini-cell mini-empty"></div>
+                            <?php
+                            // top digits (A)
+                            for ($i = 0; $i < $maxLenSmall; $i++) {
+                                $idx = $i - ($maxLenSmall - strlen($sa));
+                                $ch = $idx >= 0 ? $sa[$idx] : '';
+                                echo "<div class=\"mini-cell mini-top\">" . htmlspecialchars($ch) . "</div>";
+                            }
+                            // bottom row: operator + digits B
+                            echo "<div class=\"mini-cell mini-operator\">" . ($symbol) . "</div>";
+                            for ($i = 0; $i < $maxLenSmall; $i++) {
+                                $idx = $i - ($maxLenSmall - strlen($sb));
+                                $ch = $idx >= 0 ? $sb[$idx] : '';
+                                echo "<div class=\"mini-cell mini-bot\">" . htmlspecialchars($ch) . "</div>";
+                            }
+                            ?>
                         </div>
-                        <div class="status"><?php echo ($op['status'] === 'done') ? 'Correcto' : 'Pendiente'; ?></div>
+                        <div class="status"><?php
+                            if ($op['status'] === 'done') {
+                                // show numeric result with check mark
+                                if ($op['tipo'] === 'S') echo '✅ ' . ($op['a'] + $op['b']);
+                                else echo '✅ ' . ($op['a'] - $op['b']);
+                            } else {
+                                echo 'Pendiente';
+                            }
+                        ?></div>
                     </div>
                 </div>
             <?php endforeach; ?>
