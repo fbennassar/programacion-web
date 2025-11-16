@@ -1,8 +1,6 @@
 <?php
-// Iniciar la sesión
 session_start();
 
-// Si el usuario ya ha iniciado sesión, redirigirlo a la página de bienvenida
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: welcome.php");
     exit;
@@ -118,13 +116,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="input-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
-                <label for="username">Usuario o Correo</label>
+                <label for="username">Usuario</label>
                 <div class="input-wrapper">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M22 6L12 13L2 6" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario o correo" value="<?php echo $username; ?>">
+                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario" value="<?php echo $username; ?>">
                 </div>
                 <span class="help-block"><?php echo $username_err; ?></span>
             </div>

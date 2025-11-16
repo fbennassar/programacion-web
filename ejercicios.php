@@ -197,7 +197,6 @@ $page_ops = array_slice($operations, $start, 8);
                 <div class="card <?php echo ($op['status'] === 'done') ? 'done' : ''; ?>" data-id="<?php echo $op['id'] ?? 0; ?>" data-a="<?php echo $op['a']; ?>" data-b="<?php echo $op['b']; ?>" data-code="<?php echo $op['code']; ?>">
                     <div class="card-inner">
                         <?php
-                        // Render a small stacked representation inside the card
                         $sa = strval($op['a']);
                         $sb = strval($op['b']);
                         $maxLenSmall = max(strlen($sa), strlen($sb));
@@ -222,7 +221,6 @@ $page_ops = array_slice($operations, $start, 8);
                         </div>
                         <div class="status"><?php
                             if ($op['status'] === 'done') {
-                                // show numeric result with check mark
                                 if ($op['tipo'] === 'S') echo '✅ ' . ($op['a'] + $op['b']);
                                 else echo '✅ ' . ($op['a'] - $op['b']);
                             } else {
@@ -234,10 +232,13 @@ $page_ops = array_slice($operations, $start, 8);
             <?php endforeach; ?>
         </div>
 
-        <div class="pagination" style="text-align:center; margin-top:14px;">
+        <div class="pagination" aria-label="Paginación de ejercicios">
             <?php for ($p = 1; $p <= 3; $p++): ?>
-                <?php $active = $p === $page ? 'font-weight:bold;' : ''; ?>
-                <a href="?tipo=<?php echo $tipo; ?>&page=<?php echo $p; ?>" style="margin:6px; <?php echo $active; ?>">Página <?php echo $p; ?></a>
+                <?php $isActive = $p === $page; ?>
+                <a href="?tipo=<?php echo $tipo; ?>&page=<?php echo $p; ?>" class="page-dot <?php echo $isActive ? 'active' : ''; ?>" aria-label="Ir a página <?php echo $p; ?>" aria-current="<?php echo $isActive ? 'page' : 'false'; ?>">
+                    <span class="dot-label"><?php echo $p; ?></span>
+                    <span class="sr-only">Página <?php echo $p; ?></span>
+                </a>
             <?php endfor; ?>
         </div>
 
