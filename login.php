@@ -6,82 +6,61 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     exit;
 }
 
-// Incluir el archivo de conexión a la base de datos
 require_once "includes/db.php";
 
-// Definir variables e inicializarlas con valores vacíos
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
 
-// Procesar los datos del formulario cuando se envía
+// ESto es el proceso del form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Comprobar si el nombre de usuario está vacío
     if (empty(trim($_POST["username"]))) {
         $username_err = "Por favor, introduce tu usuario o correo.";
     } else {
         $username = trim($_POST["username"]);
     }
 
-    // Comprobar si la contraseña está vacía
     if (empty(trim($_POST["password"]))) {
         $password_err = "Por favor, introduce tu contraseña.";
     } else {
         $password = trim($_POST["password"]);
     }
 
-    // Validar las credenciales
+    // Esta es la validacion de usuario
     if (empty($username_err) && empty($password_err)) {
-        // Preparar una sentencia SELECT
         $sql = "SELECT id, username, password_hash FROM users WHERE username = ?";
 
         if ($stmt = $conn->prepare($sql)) {
-            // Vincular variables a la sentencia preparada como parámetros
             $stmt->bind_param("s", $param_username);
-
-            // Establecer los parámetros
             $param_username = $username;
 
-            // Intentar ejecutar la sentencia preparada
             if ($stmt->execute()) {
-                // Almacenar el resultado
                 $stmt->store_result();
 
-                // Comprobar si el usuario existe, si es así, verificar la contraseña
                 if ($stmt->num_rows == 1) {
-                    // Vincular las variables del resultado
                     $stmt->bind_result($id, $username_db, $hashed_password);
                     if ($stmt->fetch()) {
                         if ($hashed_password && password_verify($password, $hashed_password)) {
-                            // La contraseña es correcta, así que iniciar una nueva sesión
                             session_start();
 
-                            // Almacenar datos en las variables de sesión
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
                             $_SESSION["username"] = $username_db;
-
-                            // Redirigir al usuario a la página de bienvenida
                             header("location: welcome.php");
                         } else {
-                            // La contraseña no es válida, mostrar un mensaje de error genérico
+                            
                             $login_err = "Usuario o contraseña incorrectos.";
                         }
                     }
                 } else {
-                    // El usuario no existe, mostrar un mensaje de error genérico
                     $login_err = "Usuario o contraseña incorrectos.";
                 }
             } else {
                 echo "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
             }
-
-            // Cerrar la sentencia
             $stmt->close();
         }
     }
-
-    // Cerrar la conexión
     $conn->close();
 }
 ?>
@@ -109,7 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <?php 
         if(!empty($login_err)){
-            // use role=alert and aria-live for accessibility; tabindex makes it focusable
             echo '<div class="alert alert-danger" role="alert" aria-live="assertive" tabindex="-1">' . htmlspecialchars($login_err) . '</div>';
         }
         ?>
@@ -145,7 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="js/main.js"></script>
     <script>
-        // Focus the first field with error, or the username by default
         (function(){
             try {
                 <?php if (!empty($username_err)) : ?>
@@ -153,7 +130,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php elseif (!empty($password_err)) : ?>
                 document.getElementById('password').focus();
                 <?php elseif (!empty($login_err)) : ?>
-                // focus the container to make screen readers announce it
                 const alertEl = document.querySelector('.alert[role=alert]');
                 if (alertEl) alertEl.focus && alertEl.focus();
                 <?php else: ?>

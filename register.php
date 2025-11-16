@@ -1,5 +1,4 @@
 <?php
-// Incluir el archivo de conexión a la base de datos
 require_once "includes/db.php";
 
 // Definir variables e inicializarlas con valores vacíos
@@ -56,32 +55,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Comprobar si hay errores antes de insertar en la base de datos
     if (empty($username_err) && empty($password_err) && empty($confirm_password_err)) {
-        
-        // Preparar una sentencia INSERT
         $sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
          
         if ($stmt = $conn->prepare($sql)) {
-            // Vincular variables a la sentencia preparada como parámetros
             $stmt->bind_param("ss", $param_username, $param_password);
-            
-            // Establecer los parámetros
             $param_username = $username;
-            $param_password = password_hash($password, PASSWORD_DEFAULT); // Hashear la contraseña
+            $param_password = password_hash($password, PASSWORD_DEFAULT);
             
-            // Intentar ejecutar la sentencia preparada
             if ($stmt->execute()) {
-                // Redirigir a la página de login
                 header("location: login.php");
             } else {
                 echo "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
             }
-
-            // Cerrar la sentencia
             $stmt->close();
         }
     }
     
-    // Cerrar la conexión
+
     $conn->close();
 }
 ?>

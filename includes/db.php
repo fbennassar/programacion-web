@@ -7,7 +7,5 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Mensaje de éxito para propósitos de depuración
-// Este mensaje se puede eliminar más tarde
 // echo "Conexión establecida de forma exitosa";
 ?>

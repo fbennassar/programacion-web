@@ -1,4 +1,4 @@
-/* Estilos generales */
+
 body {
     font-family: "Arial Rounded MT Bold", Arial, sans-serif;
     margin: 0;
@@ -9,7 +9,6 @@ body {
     align-items: center;
 }
 
-/* Estilos del encabezado */
 .main-header {
     width: 100%;
     background-color: #fff;
@@ -52,7 +51,6 @@ body {
     background-color: #c82333;
 }
 
-/* Contenedor de bienvenida */
 .welcome-container {
     text-align: center;
     padding: 4rem 1rem;
@@ -98,11 +96,11 @@ body {
 }
 
 .option-sumas {
-    background-color: #5dade2; /* Azul claro */
+    background-color: #5dade2;
 }
 
 .option-restas {
-    background-color: #7dcea0; /* Verde claro */
+    background-color: #7dcea0;
 }
 
 .option-icon {

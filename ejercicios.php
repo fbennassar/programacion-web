@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Comprobar si el usuario ha iniciado sesión
+// Valida si ya se inicio sesión, si no redirige a la página de login
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
     exit;
@@ -9,13 +9,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
 require_once "includes/db.php";
 
-// Tipo y paginación: una sola vista con 3 páginas de 8 ejercicios
+// Aqui se "enruta" a una sola vista con 3 páginas de 8 ejercicios segn si es suma o resta
 $tipo = isset($_GET['tipo']) && $_GET['tipo'] === 'restas' ? 'restas' : 'sumas';
 $symbol = $tipo === 'restas' ? '-' : '+';
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 if ($page > 3) $page = 3;
 
-// Asegurar existencia de la tabla operations
+// Crea la tabla operaciones en caso de que no exista en donde se esta ejecutando el programa
 $create_table_sql = "CREATE TABLE IF NOT EXISTS operations (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -32,7 +32,6 @@ $create_table_sql = "CREATE TABLE IF NOT EXISTS operations (
 
 $conn->query($create_table_sql);
 
-// Manejar peticiones AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
     $action = $_POST['action'];
@@ -41,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $op_id = intval($_POST['op_id']);
         $answer = intval($_POST['answer']);
 
-        // Obtener operación desde la B/D
+        // Query SQL para obtener las operaciones
         $sql = "SELECT id, tipo, a, b, status FROM operations WHERE id = ? AND user_id = ? LIMIT 1";
         if ($stmt = $conn->prepare($sql)) {
             $stmt->bind_param('ii', $op_id, $_SESSION['id']);
@@ -73,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 
     if ($action === 'reset') {
-        // Eliminar todas las operaciones del usuario y crear 24 S y 24 R nuevas
+        // Reiniciar y crear 24 sumas y 24 restas nuevas
         $del = $conn->prepare("DELETE FROM operations WHERE user_id = ?");
         $del->bind_param('i', $_SESSION['id']);
         $del->execute();
@@ -83,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         for ($t = 0; $t < 2; $t++) {
             $tipo_letter = $t === 0 ? 'S' : 'R';
             for ($i = 0; $i < 24; $i++) {
-                // Para restas, asegurarnos que a >= b para evitar resultados negativos
+                // Validar que la resta tenga a >= b (osea que el primer numero sea mayor al segundo)
                 if ($tipo_letter === 'R') {
                     $a = rand(10, 99);
                     $b = rand(10, $a);
@@ -106,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// A este punto, asegurar que el usuario tiene 24 sumas y 24 restas en B/D
 $ensure_sql = "SELECT tipo, COUNT(*) as cnt FROM operations WHERE user_id = ? GROUP BY tipo";
 $have = ['S' => 0, 'R' => 0];
 if ($stmt = $conn->prepare($ensure_sql)) {
@@ -140,7 +138,6 @@ foreach (['S','R'] as $tipo_letter) {
     }
 }
 
-// Obtener hasta 24 operaciones del tipo seleccionado (3 páginas de 8)
 $operations = [];
 $select_sql = "SELECT id, code, tipo, a, b, status FROM operations WHERE user_id = ? AND tipo = ? ORDER BY id ASC LIMIT 24";
 if ($stmt = $conn->prepare($select_sql)) {
@@ -204,13 +201,12 @@ $page_ops = array_slice($operations, $start, 8);
                         <div class="mini-calc" style="grid-template-columns: auto repeat(<?php echo $maxLenSmall; ?>, 1fr);">
                             <div class="mini-cell mini-empty"></div>
                             <?php
-                            // top digits (A)
                             for ($i = 0; $i < $maxLenSmall; $i++) {
                                 $idx = $i - ($maxLenSmall - strlen($sa));
                                 $ch = $idx >= 0 ? $sa[$idx] : '';
                                 echo "<div class=\"mini-cell mini-top\">" . htmlspecialchars($ch) . "</div>";
                             }
-                            // bottom row: operator + digits B
+
                             echo "<div class=\"mini-cell mini-operator\">" . ($symbol) . "</div>";
                             for ($i = 0; $i < $maxLenSmall; $i++) {
                                 $idx = $i - ($maxLenSmall - strlen($sb));
