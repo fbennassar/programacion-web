@@ -1,1 +1,1 @@
-// main.js for future javascript code
+// Este Js ya no se utiliza

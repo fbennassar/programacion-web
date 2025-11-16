@@ -1,89 +1,66 @@
 <?php
-// Iniciar la sesión
 session_start();
 
-// Si el usuario ya ha iniciado sesión, redirigirlo a la página de bienvenida
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: welcome.php");
     exit;
 }
 
-// Incluir el archivo de conexión a la base de datos
 require_once "includes/db.php";
 
-// Definir variables e inicializarlas con valores vacíos
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
 
-// Procesar los datos del formulario cuando se envía
+// ESto es el proceso del form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Comprobar si el nombre de usuario está vacío
     if (empty(trim($_POST["username"]))) {
         $username_err = "Por favor, introduce tu usuario o correo.";
     } else {
         $username = trim($_POST["username"]);
     }
 
-    // Comprobar si la contraseña está vacía
     if (empty(trim($_POST["password"]))) {
         $password_err = "Por favor, introduce tu contraseña.";
     } else {
         $password = trim($_POST["password"]);
     }
 
-    // Validar las credenciales
+    // Esta es la validacion de usuario
     if (empty($username_err) && empty($password_err)) {
-        // Preparar una sentencia SELECT
         $sql = "SELECT id, username, password_hash FROM users WHERE username = ?";
 
         if ($stmt = $conn->prepare($sql)) {
-            // Vincular variables a la sentencia preparada como parámetros
             $stmt->bind_param("s", $param_username);
-
-            // Establecer los parámetros
             $param_username = $username;
 
-            // Intentar ejecutar la sentencia preparada
             if ($stmt->execute()) {
-                // Almacenar el resultado
                 $stmt->store_result();
 
-                // Comprobar si el usuario existe, si es así, verificar la contraseña
                 if ($stmt->num_rows == 1) {
-                    // Vincular las variables del resultado
                     $stmt->bind_result($id, $username_db, $hashed_password);
                     if ($stmt->fetch()) {
-                        if (password_verify($password, $hashed_password)) {
-                            // La contraseña es correcta, así que iniciar una nueva sesión
+                        if ($hashed_password && password_verify($password, $hashed_password)) {
                             session_start();
 
-                            // Almacenar datos en las variables de sesión
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
                             $_SESSION["username"] = $username_db;
-
-                            // Redirigir al usuario a la página de bienvenida
                             header("location: welcome.php");
                         } else {
-                            // La contraseña no es válida, mostrar un mensaje de error genérico
+                            
                             $login_err = "Usuario o contraseña incorrectos.";
                         }
                     }
                 } else {
-                    // El usuario no existe, mostrar un mensaje de error genérico
                     $login_err = "Usuario o contraseña incorrectos.";
                 }
             } else {
                 echo "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
             }
-
-            // Cerrar la sentencia
             $stmt->close();
         }
     }
-
-    // Cerrar la conexión
     $conn->close();
 }
 ?>
@@ -100,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <div class="login-container">
+    <div class="login-container <?php echo (!empty($login_err) ? 'shake' : ''); ?>">
         <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24">
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" 
             stroke-width="1.5" 
@@ -111,19 +88,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <?php 
         if(!empty($login_err)){
-            echo '<div class="alert alert-danger">' . $login_err . '</div>';
-        }        
+            echo '<div class="alert alert-danger" role="alert" aria-live="assertive" tabindex="-1">' . htmlspecialchars($login_err) . '</div>';
+        }
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="input-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
-                <label for="username">Usuario o Correo</label>
+                <label for="username">Usuario</label>
                 <div class="input-wrapper">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M22 6L12 13L2 6" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario o correo" value="<?php echo $username; ?>">
+                    <input type="text" id="username" name="username" placeholder="Escribe tu usuario" value="<?php echo $username; ?>">
                 </div>
                 <span class="help-block"><?php echo $username_err; ?></span>
             </div>
@@ -145,6 +122,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <script src="js/main.js"></script>
+    <script>
+        (function(){
+            try {
+                <?php if (!empty($username_err)) : ?>
+                document.getElementById('username').focus();
+                <?php elseif (!empty($password_err)) : ?>
+                document.getElementById('password').focus();
+                <?php elseif (!empty($login_err)) : ?>
+                const alertEl = document.querySelector('.alert[role=alert]');
+                if (alertEl) alertEl.focus && alertEl.focus();
+                <?php else: ?>
+                document.getElementById('username').focus();
+                <?php endif; ?>
+            } catch(e) { /* noop */ }
+        })();
+    </script>
 </body>
 
 </html>

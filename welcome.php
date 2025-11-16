@@ -1,5 +1,4 @@
 <?php
-// Iniciar la sesión
 session_start();
 
 // Comprobar si el usuario ha iniciado sesión, si no, redirigirlo a la página de login

@@ -54,6 +54,21 @@ body {
     box-sizing: border-box;
     font-size: 16px;
 }
+
+/* Estas son las alertas */
+.alert { border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-weight: 700; }
+.alert-danger { background: linear-gradient(180deg,#ffe6e6,#ffd6d6); color: #b00020; border: 1px solid rgba(176,0,32,0.12); box-shadow: 0 6px 18px rgba(176,0,32,0.06); }
+.help-block { color: #b00020; font-weight: 600; margin-top: 8px; display: block; }
+.has-error .input-wrapper input { border-color: #e53935; box-shadow: 0 6px 18px rgba(229,57,53,0.06); }
+
+/* Esto es pa el error en el inicio de sesion */
+.shake { animation: shake 520ms cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+}
 .forgot-password {
     display: block;
     margin-top: -10px;
